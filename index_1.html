@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lara App — Gestão sem segredos</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── THEME SWITCHER BAR ── */
+.theme-bar{position:fixed;bottom:0;left:0;right:0;z-index:20000;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);}
+.theme-bar span{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-right:4px;white-space:nowrap;}
+.tb{border:none;border-radius:50px;padding:7px 16px;font-family:'Sora',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;opacity:.55;white-space:nowrap;}
+.tb:hover{opacity:.85;transform:scale(1.04);}
+.tb.active{opacity:1;transform:scale(1.06);box-shadow:0 4px 18px rgba(0,0,0,.4);}
+.tb-laranja{background:linear-gradient(135deg,#F97316,#FBBF24);color:#fff;}
+.tb-violeta{background:linear-gradient(135deg,#7C5CFC,#00D4B4);color:#fff;}
+.tb-azul{background:linear-gradient(135deg,#2563EB,#F59E0B);color:#fff;}
+.tb-verde{background:linear-gradient(135deg,#10B981,#059669);color:#fff;}
+
+/* ── TOKENS (default: laranja) ── */
+:root{
+  --bg:#0C0A08;--bg2:#141008;--card:#1C1610;
+  --v:#F97316;--t:#FBBF24;--tx:#FFF8F0;--mu:#9CA3AF;
+  --bd:rgba(249,115,22,0.18);
+  --grd:linear-gradient(135deg,#F97316,#FBBF24);
+  --r:16px;
+  --nav-bg:rgba(12,10,8,.93);
+  --glow1:rgba(249,115,22,.2);--glow2:rgba(251,191,36,.12);
+  --faq-open:rgba(249,115,22,.14);
+  --modal-bg:rgba(5,4,2,.88);
+  --step-shadow:rgba(249,115,22,.35);
+  --feat-hover-border:rgba(249,115,22,.45);
+  --feat-hover-shadow:rgba(249,115,22,.13);
+  --feat-icon-bg:rgba(249,115,22,.12);
+  --feat-icon-border:rgba(249,115,22,.2);
+  --modal-icon-bg:rgba(249,115,22,.14);
+  --modal-icon-border:rgba(249,115,22,.22);
+  --hl-bg1:rgba(249,115,22,.1);--hl-bg2:rgba(251,191,36,.07);
+  --hl-border:rgba(249,115,22,.2);
+  --pop-shadow:rgba(249,115,22,.2);
+  --wpp-out:#F97316;--wpp-send:#FBBF24;
+  --pdf-bg:rgba(249,115,22,.12);--pdf-border:rgba(249,115,22,.28);
+  --xmark:rgba(255,255,255,.18);
+  --pill-bg:rgba(255,255,255,.05);
+  --mob-hover:rgba(255,255,255,.04);
+}
+
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden;padding-bottom:56px;}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.15;}
+a{color:inherit;text-decoration:none;}
+
+/* ── PULSE ── */
+.pulse-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;background:var(--grd);transform-origin:left;animation:pb 3s ease-in-out infinite;}
+@keyframes pb{0%{opacity:.5;transform:scaleX(.3);}50%{opacity:1;transform:scaleX(1);}100%{opacity:.5;transform:scaleX(.3);}}
+
+/* ── NAV ── */
+nav{position:fixed;top:3px;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:12px 4%;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);}
+.nav-logo{display:flex;flex-direction:column;line-height:1;gap:1px;}
+.logo-lara{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px;}
+.logo-app{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:300;color:var(--mu);letter-spacing:-.5px;-webkit-text-fill-color:var(--mu);}
+.logo-tag{font-size:.5rem;font-weight:500;color:var(--mu);letter-spacing:1.2px;text-transform:uppercase;opacity:.7;}
+.nav-cta{background:var(--grd);border:none;border-radius:50px;padding:8px 18px;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;color:#fff;cursor:pointer;}
+.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:4px;}
+.hamburger span{width:20px;height:2px;background:var(--tx);border-radius:2px;}
+.mmenu{display:none;flex-direction:column;position:fixed;top:62px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--bd);z-index:998;}
+.mmenu.open{display:flex;}
+.mmenu a{padding:14px 4%;color:var(--mu);font-size:.9rem;font-weight:500;border-bottom:1px solid var(--bd);transition:background .2s;}
+.mmenu a:hover{background:var(--mob-hover);}
+.mob-cta{background:var(--grd);margin:12px 4% 16px;border-radius:50px;padding:12px;text-align:center;font-family:'Sora',sans-serif;font-weight:700;color:#fff;font-size:.9rem;display:block;}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:110px 4% 60px;position:relative;overflow:hidden;}
+.hglow{position:absolute;top:-120px;right:-120px;width:420px;height:420px;background:radial-gradient(circle,var(--glow1) 0%,transparent 65%);pointer-events:none;}
+.hglow2{position:absolute;bottom:-80px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,var(--glow2) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{max-width:1000px;margin:0 auto;width:100%;position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--feat-icon-bg);border:1px solid var(--feat-hover-border);border-radius:50px;padding:5px 13px;font-size:.75rem;font-weight:600;color:var(--v);margin-bottom:20px;}
+.dot{width:7px;height:7px;background:var(--t);border-radius:50%;animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-title{font-size:clamp(1.9rem,4vw,3rem);font-weight:800;line-height:1.08;margin-bottom:18px;}
+.grad{background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:.93rem;color:var(--mu);line-height:1.7;max-width:460px;margin-bottom:30px;}
+.ha{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-p{background:var(--grd);border:none;border-radius:50px;padding:13px 28px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s;}
+.btn-p:hover{transform:translateY(-2px);}
+.btn-g{background:transparent;border:1.5px solid rgba(255,255,255,.2);border-radius:50px;padding:13px 24px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:600;color:var(--tx);cursor:pointer;transition:border-color .2s;}
+.btn-g:hover{border-color:var(--v);}
+.hstats{display:flex;gap:24px;margin-top:32px;flex-wrap:wrap;}
+.hstat .num{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:800;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hstat .lbl{font-size:.72rem;color:var(--mu);}
+
+/* ── WPP ── */
+.wpp{background:#111827;border-radius:20px;border:1px solid rgba(255,255,255,.07);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);max-width:300px;margin:0 auto;}
+.wh{background:#1F2937;padding:11px 14px;display:flex;align-items:center;gap:9px;}
+.wav{width:34px;height:34px;border-radius:50%;background:var(--grd);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:.85rem;color:#fff;}
+.wn{font-family:'Sora',sans-serif;font-size:.82rem;font-weight:700;color:#F1F5F9;}
+.ws{font-size:.67rem;color:#22c55e;}
+.wb{padding:14px;display:flex;flex-direction:column;gap:8px;min-height:220px;background:#111827;}
+.wm{padding:8px 11px;border-radius:12px;font-size:.78rem;line-height:1.5;max-width:90%;}
+.wm.in{background:#1E293B;align-self:flex-start;border-bottom-left-radius:3px;color:#CBD5E1;}
+.wm.out{background:var(--wpp-out);align-self:flex-end;border-bottom-right-radius:3px;color:#fff;}
+.wm.typ{background:#1E293B;align-self:flex-start;width:50px;}
+.dots{display:flex;gap:4px;align-items:center;padding:3px 0;}
+.dots span{width:6px;height:6px;background:#64748B;border-radius:50%;animation:db .9s ease infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes db{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);}}
+.wt{font-size:.6rem;color:var(--mu);text-align:right;margin-top:2px;}
+.wpdf{display:flex;align-items:center;gap:8px;background:var(--pdf-bg);border:1px solid var(--pdf-border);border-radius:10px;padding:10px 12px;align-self:flex-start;max-width:96%;animation:fup .4s ease;}
+.wpi{font-size:1.4rem;flex-shrink:0;}
+.wpdf-info{display:flex;flex-direction:column;}
+.wpn{font-size:.72rem;font-weight:700;color:#F1F5F9;margin-bottom:2px;}
+.wpm{font-size:.62rem;color:var(--mu);}
+.wi{background:#1F2937;padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.wif{flex:1;background:#374151;border:none;outline:none;border-radius:16px;padding:6px 11px;color:#CBD5E1;font-size:.76rem;}
+.wis{width:30px;height:30px;background:var(--wpp-send);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── TICKER ── */
+.ticker{overflow:hidden;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:14px 0;background:var(--bg2);}
+.tt{display:flex;gap:44px;animation:tick 18s linear infinite;white-space:nowrap;}
+.ti{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:600;color:var(--mu);flex-shrink:0;}
+.ti span{color:var(--tx);}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%)}}
+
+/* ── SECTIONS ── */
+section{padding:80px 4%;}
+.si{max-width:1000px;margin:0 auto;}
+.eye{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:10px;}
+.stitle{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:14px;}
+.ssub{font-size:.93rem;color:var(--mu);max-width:540px;line-height:1.7;}
+
+/* ── FEATURES ── */
+.features{background:var(--bg2);}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:44px;}
+.fc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:24px 20px;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative;overflow:hidden;}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grd);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.fc:hover{transform:translateY(-3px);border-color:var(--feat-hover-border);box-shadow:0 16px 48px var(--feat-hover-shadow);}
+.fc:hover::before{transform:scaleX(1);}
+.fi{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px;background:var(--feat-icon-bg);border:1px solid var(--feat-icon-border);}
+.fn{font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;margin-bottom:7px;}
+.fd{font-size:.82rem;color:var(--mu);line-height:1.6;}
+.fa{display:inline-flex;align-items:center;gap:5px;font-size:.77rem;color:var(--v);font-weight:600;margin-top:12px;}
+
+/* ── PLANS ── */
+.plans{background:var(--bg);}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:44px;align-items:start;}
+.pc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:28px 22px;position:relative;transition:transform .25s;}
+.pc:hover{transform:translateY(-3px);}
+.pc.pop{border-color:var(--v);background:linear-gradient(160deg,var(--feat-icon-bg),transparent);box-shadow:0 0 0 1px var(--v),0 24px 60px var(--pop-shadow);}
+.pb{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--grd);border-radius:50px;padding:4px 14px;font-size:.68rem;font-weight:800;color:#fff;white-space:nowrap;font-family:'Sora',sans-serif;}
+.pn{font-family:'Sora',sans-serif;font-size:.75rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.pp{font-family:'Sora',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;}
+.pp sup{font-size:.9rem;font-weight:600;vertical-align:top;margin-top:6px;margin-right:2px;}
+.pp .per{font-size:.78rem;font-weight:400;color:var(--mu);}
+.pd{font-size:.8rem;color:var(--mu);margin:9px 0 18px;line-height:1.6;}
+.pdiv{height:1px;background:var(--bd);margin-bottom:18px;}
+.pf{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.pf li{font-size:.82rem;display:flex;align-items:flex-start;gap:8px;color:var(--mu);}
+.pf li .ck{color:var(--t);flex-shrink:0;}.pf li .xk{color:var(--xmark);flex-shrink:0;}.pf li.on{color:var(--tx);}
+.pbtn{width:100%;background:var(--grd);border:none;border-radius:50px;padding:12px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;color:#fff;cursor:pointer;transition:opacity .2s;}
+.pbtn:hover{opacity:.9;}
+.pbtn.gh{background:transparent;border:1.5px solid var(--bd);color:var(--mu);}
+.pbtn.gh:hover{border-color:var(--v);color:var(--tx);}
+
+/* ── TESTIMONIALS ── */
+.testimonials{background:var(--bg2);}
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:44px;}
+.tc{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:22px;}
+.ts{color:#FBBF24;font-size:.9rem;margin-bottom:10px;letter-spacing:2px;}
+.tt2{font-size:.87rem;color:var(--tx);line-height:1.7;margin-bottom:16px;font-style:italic;}
+.ta{display:flex;align-items:center;gap:10px;}
+.tav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:.8rem;color:#fff;flex-shrink:0;}
+.tn{font-family:'Sora',sans-serif;font-size:.85rem;font-weight:700;}
+.tr{font-size:.72rem;color:var(--mu);}
+
+/* ── HOW TO ── */
+.howto{background:var(--bg);}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;margin-top:44px;}
+.step{text-align:center;}
+.snum{width:52px;height:52px;border-radius:50%;background:var(--grd);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;margin:0 auto 16px;box-shadow:0 6px 22px var(--step-shadow);}
+.stit{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:6px;}
+.sdesc{font-size:.82rem;color:var(--mu);line-height:1.6;}
+
+/* ── FAQ ── */
+.faq{background:var(--bg2);}
+.flist{max-width:680px;margin:38px auto 0;}
+.fitem{border-bottom:1px solid var(--bd);}
+.fq{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;padding:18px 0;cursor:pointer;text-align:left;font-family:'Sora',sans-serif;font-size:.9rem;font-weight:600;color:var(--tx);gap:12px;}
+.fq .ar{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s,background .2s;color:var(--v);}
+.fitem.open .fq .ar{transform:rotate(45deg);background:var(--faq-open);}
+.fans{max-height:0;overflow:hidden;font-size:.85rem;color:var(--mu);line-height:1.7;transition:max-height .4s ease,padding .3s;padding:0;}
+.fitem.open .fans{max-height:260px;padding-bottom:16px;}
+
+/* ── CTA BAND ── */
+.cta-band{background:linear-gradient(135deg,var(--hl-bg1) 0%,var(--hl-bg2) 100%);border-top:1px solid var(--hl-border);border-bottom:1px solid var(--hl-border);padding:70px 4%;text-align:center;}
+.cta-band h2{font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:800;margin-bottom:12px;}
+.cta-band p{font-size:.93rem;color:var(--mu);max-width:500px;margin:0 auto 28px;line-height:1.7;}
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
+.pill{background:var(--pill-bg);border:1px solid var(--bd);border-radius:50px;padding:6px 14px;font-size:.74rem;color:var(--mu);}
+
+/* ── FOOTER ── */
+footer{background:var(--bg);padding:50px 4% 24px;border-top:1px solid var(--bd);}
+.fi3{max-width:1000px;margin:0 auto;}
+.ft2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:40px;}
+.fb p{font-size:.82rem;color:var(--mu);line-height:1.7;max-width:260px;margin-top:8px;}
+.fc2 h4{font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;margin-bottom:12px;color:var(--tx);}
+.fc2 ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.fc2 ul li a{font-size:.8rem;color:var(--mu);transition:color .2s;}
+.fc2 ul li a:hover{color:var(--t);}
+.fbot{border-top:1px solid var(--bd);padding-top:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fbot p{font-size:.76rem;color:var(--mu);}
+
+/* ── MODAL ── */
+.mo{position:fixed;inset:0;z-index:10000;background:var(--modal-bg);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .35s;}
+.mo.active{opacity:1;pointer-events:all;}
+.md{width:min(640px,96vw);height:100dvh;background:var(--bg2);border-left:1px solid var(--bd);overflow-y:auto;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
+.mo.active .md{transform:translateX(0);}
+.mh{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--bd);padding:20px 24px;display:flex;align-items:center;gap:12px;z-index:10;}
+.mhi{width:44px;height:44px;border-radius:12px;background:var(--modal-icon-bg);border:1px solid var(--modal-icon-border);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.mht{flex:1;}
+.mht h3{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:700;}
+.mht p{font-size:.77rem;color:var(--mu);margin-top:2px;}
+.mc{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.95rem;color:var(--mu);flex-shrink:0;transition:background .2s;}
+.mc:hover{background:rgba(255,255,255,.14);}
+.mb{padding:28px 24px;flex:1;}
+.ms{margin-bottom:28px;}
+.ms h4{font-family:'Sora',sans-serif;font-size:.92rem;font-weight:700;margin-bottom:9px;color:var(--t);}
+.ms p{font-size:.87rem;color:var(--mu);line-height:1.75;margin-bottom:9px;}
+.ms ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:7px;}
+.ms ul li{font-size:.84rem;color:var(--tx);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.ms ul li::before{content:'→';color:var(--v);flex-shrink:0;font-weight:700;}
+.mhl{background:linear-gradient(135deg,var(--hl-bg1),var(--hl-bg2));border:1px solid var(--hl-border);border-radius:10px;padding:16px 18px;margin-top:9px;}
+.mhl p{color:var(--tx);font-size:.85rem;margin:0;}
+.mcta{background:var(--grd);border:none;border-radius:50px;padding:12px 24px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;color:#fff;cursor:pointer;margin-top:24px;width:100%;transition:opacity .2s;}
+.mcta:hover{opacity:.9;}
+
+/* ── ANIMS ── */
+@keyframes fup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){.hero-inner{grid-template-columns:1fr;}.wpp{display:none;}.ft2{grid-template-columns:1fr 1fr;}}
+@media(max-width:520px){section{padding:60px 4%;}.hero{padding:90px 4% 50px;}.hero-title{font-size:1.85rem;}.ft2{grid-template-columns:1fr;}.theme-bar span{display:none;}}
+
+/* ── VERDE (light) overrides ── */
+body.verde{--bg:#F8FAFB;--bg2:#EFF2F5;--card:#FFFFFF;--tx:#0F172A;--mu:#64748B;--xmark:rgba(0,0,0,.18);--pill-bg:rgba(16,185,129,.06);--mob-hover:rgba(0,0,0,.03);--modal-bg:rgba(15,23,42,.85);}
+body.verde .mc{background:rgba(0,0,0,.04);}
+body.verde .mc:hover{background:rgba(0,0,0,.1);}
+body.verde .wpp{box-shadow:0 20px 60px rgba(0,0,0,.15);}
+</style>
+</head>
+<body>
+
+<!-- THEME SWITCHER -->
+<div class="theme-bar">
+  <span>Paleta:</span>
+  <button class="tb tb-laranja active" onclick="setTheme('laranja')">🟠 Laranja</button>
+  <button class="tb tb-violeta" onclick="setTheme('violeta')">🟣 Violeta</button>
+  <button class="tb tb-azul" onclick="setTheme('azul')">🔵 Azul</button>
+  <button class="tb tb-verde" onclick="setTheme('verde')">🌿 Verde</button>
+</div>
+
+<div class="pulse-bar"></div>
+
+<nav>
+  <div class="nav-logo">
+    <div><span class="logo-lara">Lara</span><span class="logo-app">App</span></div>
+    <div class="logo-tag">Gestão sem segredos</div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <div style="display:flex;gap:20px;" id="nl">
+      <a href="#features" style="font-size:.8rem;color:var(--mu);font-weight:500;">Recursos</a>
+      <a href="#plans" style="font-size:.8rem;color:var(--mu);font-weight:500;">Planos</a>
+      <a href="#faq" style="font-size:.8rem;color:var(--mu);font-weight:500;">FAQ</a>
+    </div>
+    <button class="nav-cta" onclick="s('plans')">Começar grátis</button>
+    <div class="hamburger" onclick="document.getElementById('mm').classList.toggle('open')"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mmenu" id="mm">
+  <a href="#features" onclick="document.getElementById('mm').classList.remove('open')">Recursos</a>
+  <a href="#howto" onclick="document.getElementById('mm').classList.remove('open')">Como funciona</a>
+  <a href="#plans" onclick="document.getElementById('mm').classList.remove('open')">Planos</a>
+  <a href="#faq" onclick="document.getElementById('mm').classList.remove('open')">FAQ</a>
+  <a href="#plans" class="mob-cta" onclick="document.getElementById('mm').classList.remove('open')">Começar grátis →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hglow"></div><div class="hglow2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>IA que trabalha enquanto você descansa</div>
+      <h1 class="hero-title">Sua empresa<br>gerenciada por<br><span class="grad">inteligência artificial</span></h1>
+      <p class="hero-sub">Lara centraliza finanças, agenda, contratos e comunicação — tudo pelo WhatsApp. Uma assistente que entende seu negócio e responde em segundos.</p>
+      <div class="ha">
+        <button class="btn-p" onclick="s('plans')">Testar 14 dias grátis →</button>
+        <button class="btn-g" onclick="s('features')">Ver todos os recursos</button>
+      </div>
+      <div class="hstats">
+        <div class="hstat"><div class="num">97%</div><div class="lbl">de satisfação</div></div>
+        <div class="hstat"><div class="num">3h+</div><div class="lbl">economizadas/dia</div></div>
+        <div class="hstat"><div class="num">0</div><div class="lbl">treinamento</div></div>
+      </div>
+    </div>
+    <div class="wpp">
+      <div class="wh"><div class="wav">L</div><div><div class="wn">Lara IA</div><div class="ws">● online agora</div></div></div>
+      <div class="wb" id="wb"></div>
+      <div class="wi"><input class="wif" placeholder="Digite uma mensagem..." readonly><div class="wis"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="tt">
+    <div class="ti">🤖 <span>Assistente IA no WhatsApp</span></div><div class="ti">💰 <span>Controle financeiro</span></div><div class="ti">📅 <span>Agenda inteligente</span></div><div class="ti">📄 <span>Contratos digitais</span></div><div class="ti">🔐 <span>Cofre de senhas</span></div><div class="ti">📧 <span>Email marketing</span></div><div class="ti">📞 <span>PABX na nuvem</span></div><div class="ti">📱 <span>App iOS & Android</span></div>
+    <div class="ti">🤖 <span>Assistente IA no WhatsApp</span></div><div class="ti">💰 <span>Controle financeiro</span></div><div class="ti">📅 <span>Agenda inteligente</span></div><div class="ti">📄 <span>Contratos digitais</span></div><div class="ti">🔐 <span>Cofre de senhas</span></div><div class="ti">📧 <span>Email marketing</span></div><div class="ti">📞 <span>PABX na nuvem</span></div><div class="ti">📱 <span>App iOS & Android</span></div>
+  </div>
+</div>
+
+<!-- HOW TO -->
+<section class="howto" id="howto"><div class="si">
+  <div class="eye">Como funciona</div>
+  <h2 class="stitle">Configure em minutos,<br>use para sempre</h2>
+  <p class="ssub">Sem migração complexa, sem treinamento de equipe. Lara aprende seu negócio e já começa a trabalhar no mesmo dia.</p>
+  <div class="steps">
+    <div class="step"><div class="snum">1</div><div class="stit">Crie sua conta</div><div class="sdesc">Cadastre-se em 60 segundos. Plano gratuito, sem cartão de crédito.</div></div>
+    <div class="step"><div class="snum">2</div><div class="stit">Conecte o WhatsApp</div><div class="sdesc">Escaneie o QR Code e a Lara começa a responder imediatamente.</div></div>
+    <div class="step"><div class="snum">3</div><div class="stit">Cadastre seus dados</div><div class="sdesc">Despesas, agenda e contratos. Lara organiza tudo automaticamente.</div></div>
+    <div class="step"><div class="snum">4</div><div class="stit">Deixa a IA trabalhar</div><div class="sdesc">Gerencie tudo pelo WhatsApp, de onde estiver.</div></div>
+  </div>
+</div></section>
+
+<!-- FEATURES -->
+<section class="features" id="features"><div class="si">
+  <div class="eye">Recursos completos</div>
+  <h2 class="stitle">Tudo que sua empresa<br>precisa, em um só lugar</h2>
+  <p class="ssub">Clique em qualquer recurso para ver como ele funciona na prática.</p>
+  <div class="fg" id="fg"></div>
+</div></section>
+
+<!-- PLANS -->
+<section class="plans" id="plans"><div class="si">
+  <div class="eye">Planos e preços</div>
+  <h2 class="stitle">Investimento que<br>se paga no primeiro mês</h2>
+  <p class="ssub">Comece grátis, faça upgrade quando quiser. Cancele a qualquer momento.</p>
+  <div class="pg">
+    <div class="pc"><div class="pn">Free</div><div class="pp"><sup>R$</sup>0<span class="per">/mês</span></div><p class="pd">Para conhecer a Lara e começar a organizar seu negócio.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>IA modelo local</li><li class="on"><span class="ck">✓</span>Até 50 despesas/mês</li><li class="on"><span class="ck">✓</span>Agenda básica · 1 usuário</li><li><span class="xk">✗</span>Contratos e assinatura</li><li><span class="xk">✗</span>Email marketing · PABX</li></ul><button class="pbtn gh">Começar grátis</button></div>
+    <div class="pc pop"><div class="pb">⚡ Mais popular</div><div class="pn">Pro</div><div class="pp"><sup>R$</sup>97<span class="per">/mês</span></div><p class="pd">Para profissionais e pequenas empresas que querem crescer.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>IA Claude (mais avançada)</li><li class="on"><span class="ck">✓</span>Despesas e receitas ilimitadas</li><li class="on"><span class="ck">✓</span>Agenda + lembretes automáticos</li><li class="on"><span class="ck">✓</span>Contratos com assinatura digital</li><li class="on"><span class="ck">✓</span>Cofre de senhas · Até 3 usuários</li><li><span class="xk">✗</span>Email marketing · PABX</li></ul><button class="pbtn">Assinar Pro →</button></div>
+    <div class="pc"><div class="pn">Business</div><div class="pp"><sup>R$</sup>297<span class="per">/mês</span></div><p class="pd">Para empresas que querem automação completa e escala.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>Tudo do Pro</li><li class="on"><span class="ck">✓</span>Email marketing (50k disparos)</li><li class="on"><span class="ck">✓</span>PABX na nuvem</li><li class="on"><span class="ck">✓</span>Relatórios IA avançados</li><li class="on"><span class="ck">✓</span>Multi-tenant · Usuários ilimitados</li><li class="on"><span class="ck">✓</span>Suporte prioritário</li></ul><button class="pbtn">Assinar Business →</button></div>
+    <div class="pc"><div class="pn">PABX Add-on</div><div class="pp"><sup>R$</sup>149<span class="per">/mês</span></div><p class="pd">Telefonia profissional para qualquer plano Lara.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>Número dedicado</li><li class="on"><span class="ck">✓</span>URA / IVR personalizável</li><li class="on"><span class="ck">✓</span>Ramais + Gravação de chamadas</li><li class="on"><span class="ck">✓</span>Relatórios de ligações</li><li class="on"><span class="ck">✓</span>Integra com WhatsApp IA</li></ul><button class="pbtn gh">Adicionar ao plano</button></div>
+  </div>
+  <p style="text-align:center;margin-top:22px;font-size:.78rem;color:var(--mu);">💳 Pix, boleto ou cartão &nbsp;·&nbsp; 🔒 SSL certificado &nbsp;·&nbsp; ✅ Cancele quando quiser</p>
+</div></section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials"><div class="si">
+  <div class="eye">Depoimentos reais</div>
+  <h2 class="stitle">Quem usa,<br>não quer mais sem</h2>
+  <div class="tg">
+    <div class="tc"><div class="ts">★★★★★</div><p class="tt2">"Com a Lara, mando uma mensagem no WhatsApp e ela categorizou tudo e me deu o resumo. Incrível."</p><div class="ta"><div class="tav" id="av1">AM</div><div><div class="tn">Ana Mariana S.</div><div class="tr">Consultora Financeira, SP</div></div></div></div>
+    <div class="tc"><div class="ts">★★★★★</div><p class="tt2">"Contratos com assinatura digital salvaram minha agência. Clientes assinam pelo celular em 2 minutos. Sem cartório."</p><div class="ta"><div class="tav" id="av2">RC</div><div><div class="tn">Ricardo C.</div><div class="tr">Dono de Agência, RJ</div></div></div></div>
+    <div class="tc"><div class="ts">★★★★★</div><p class="tt2">"O PABX integrado ao WhatsApp é o diferencial. Cliente liga, Lara atende com URA. Zero chamada perdida."</p><div class="ta"><div class="tav" id="av3">PT</div><div><div class="tn">Patricia T.</div><div class="tr">Clínica Odontológica, MG</div></div></div></div>
+  </div>
+</div></section>
+
+<!-- FAQ -->
+<section class="faq" id="faq"><div class="si" style="text-align:center;">
+  <div class="eye">Perguntas frequentes</div>
+  <h2 class="stitle" style="margin-bottom:0">Tudo que você quer saber<br>antes de assinar</h2>
+</div><div class="flist" id="fl"></div></section>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>Sua empresa merece<br>trabalhar de forma inteligente</h2>
+  <p>Comece grátis agora. Sem cartão de crédito, sem compromisso. Recupere horas já na primeira semana.</p>
+  <button class="btn-p" style="font-size:.95rem;padding:15px 36px;" onclick="s('plans')">Criar minha conta grátis →</button>
+  <div class="pills">
+    <div class="pill">✅ 14 dias de trial</div><div class="pill">🔒 Dados protegidos</div><div class="pill">📱 Funciona no WhatsApp</div><div class="pill">🇧🇷 100% em português</div><div class="pill">⚡ Ativa em minutos</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer><div class="fi3">
+  <div class="ft2">
+    <div class="fb">
+      <div><span class="logo-lara">Lara</span><span class="logo-app">App</span></div>
+      <div class="logo-tag">Gestão sem segredos</div>
+      <p>Produtividade empresarial com IA que cabe no seu WhatsApp. Desenvolvida para o empreendedor brasileiro.</p>
+    </div>
+    <div class="fc2"><h4>Produto</h4><ul><li><a href="#features">Recursos</a></li><li><a href="#plans">Planos</a></li><li><a href="#howto">Como funciona</a></li><li><a href="#">Changelog</a></li></ul></div>
+    <div class="fc2"><h4>Empresa</h4><ul><li><a href="#">Sobre nós</a></li><li><a href="#">Blog</a></li><li><a href="#">Afiliados</a></li><li><a href="#">Carreiras</a></li></ul></div>
+    <div class="fc2"><h4>Legal</h4><ul><li><a href="#">Termos de uso</a></li><li><a href="#">Privacidade</a></li><li><a href="#">LGPD</a></li><li><a href="#">Contato</a></li></ul></div>
+  </div>
+  <div class="fbot"><p>© 2025 Lara App. Todos os direitos reservados.</p><p>Feito com ❤️ no Brasil 🇧🇷</p></div>
+</div></footer>
+
+<!-- MODAL -->
+<div class="mo" id="mo" onclick="if(event.target===this)cM()">
+  <div class="md">
+    <div class="mh"><div class="mhi" id="mI"></div><div class="mht"><h3 id="mT"></h3><p id="mS"></p></div><div class="mc" onclick="cM()">✕</div></div>
+    <div class="mb" id="mB"></div>
+  </div>
+</div>
+
+<script>
+// ── THEMES ──────────────────────────────────────────────────────────────
+const themes = {
+  laranja: {
+    '--bg':'#0C0A08','--bg2':'#141008','--card':'#1C1610',
+    '--v':'#F97316','--t':'#FBBF24','--tx':'#FFF8F0','--mu':'#9CA3AF',
+    '--bd':'rgba(249,115,22,0.18)',
+    '--grd':'linear-gradient(135deg,#F97316,#FBBF24)',
+    '--nav-bg':'rgba(12,10,8,.93)',
+    '--glow1':'rgba(249,115,22,.2)','--glow2':'rgba(251,191,36,.12)',
+    '--faq-open':'rgba(249,115,22,.14)','--modal-bg':'rgba(5,4,2,.88)',
+    '--step-shadow':'rgba(249,115,22,.35)',
+    '--feat-hover-border':'rgba(249,115,22,.45)',
+    '--feat-hover-shadow':'rgba(249,115,22,.13)',
+    '--feat-icon-bg':'rgba(249,115,22,.12)',
+    '--feat-icon-border':'rgba(249,115,22,.2)',
+    '--modal-icon-bg':'rgba(249,115,22,.14)',
+    '--modal-icon-border':'rgba(249,115,22,.22)',
+    '--hl-bg1':'rgba(249,115,22,.1)','--hl-bg2':'rgba(251,191,36,.07)',
+    '--hl-border':'rgba(249,115,22,.2)','--pop-shadow':'rgba(249,115,22,.2)',
+    '--wpp-out':'#F97316','--wpp-send':'#FBBF24',
+    '--pdf-bg':'rgba(249,115,22,.12)','--pdf-border':'rgba(249,115,22,.28)',
+    '--xmark':'rgba(255,255,255,.18)','--pill-bg':'rgba(255,255,255,.05)',
+    '--mob-hover':'rgba(255,255,255,.04)',
+    avatars:['linear-gradient(135deg,#F97316,#FBBF24)','linear-gradient(135deg,#FB923C,#F97316)','linear-gradient(135deg,#FBBF24,#F97316)'],
+    body:''
+  },
+  violeta: {
+    '--bg':'#0D0F1A','--bg2':'#13162A','--card':'#1A1D35',
+    '--v':'#7C5CFC','--t':'#00D4B4','--tx':'#F0F2FF','--mu':'#8890B5',
+    '--bd':'rgba(124,92,252,0.18)',
+    '--grd':'linear-gradient(135deg,#7C5CFC,#00D4B4)',
+    '--nav-bg':'rgba(13,15,26,.88)',
+    '--glow1':'rgba(124,92,252,.22)','--glow2':'rgba(0,212,180,.15)',
+    '--faq-open':'rgba(124,92,252,.15)','--modal-bg':'rgba(5,6,14,.88)',
+    '--step-shadow':'rgba(124,92,252,.35)',
+    '--feat-hover-border':'rgba(124,92,252,.45)',
+    '--feat-hover-shadow':'rgba(124,92,252,.13)',
+    '--feat-icon-bg':'rgba(124,92,252,.12)',
+    '--feat-icon-border':'rgba(124,92,252,.2)',
+    '--modal-icon-bg':'rgba(124,92,252,.14)',
+    '--modal-icon-border':'rgba(124,92,252,.22)',
+    '--hl-bg1':'rgba(124,92,252,.1)','--hl-bg2':'rgba(0,212,180,.07)',
+    '--hl-border':'rgba(124,92,252,.2)','--pop-shadow':'rgba(124,92,252,.2)',
+    '--wpp-out':'#7C5CFC','--wpp-send':'#00D4B4',
+    '--pdf-bg':'rgba(124,92,252,.12)','--pdf-border':'rgba(124,92,252,.28)',
+    '--xmark':'rgba(255,255,255,.18)','--pill-bg':'rgba(255,255,255,.05)',
+    '--mob-hover':'rgba(255,255,255,.04)',
+    avatars:['linear-gradient(135deg,#7C5CFC,#00D4B4)','linear-gradient(135deg,#FF5FA0,#7C5CFC)','linear-gradient(135deg,#00D4B4,#7C5CFC)'],
+    body:''
+  },
+  azul: {
+    '--bg':'#0A0E1A','--bg2':'#0F1422','--card':'#111827',
+    '--v':'#2563EB','--t':'#F59E0B','--tx':'#F0F6FF','--mu':'#94A3B8',
+    '--bd':'rgba(37,99,235,0.18)',
+    '--grd':'linear-gradient(135deg,#2563EB,#1D4ED8)',
+    '--nav-bg':'rgba(10,14,26,.92)',
+    '--glow1':'rgba(37,99,235,.22)','--glow2':'rgba(245,158,11,.12)',
+    '--faq-open':'rgba(37,99,235,.14)','--modal-bg':'rgba(4,6,14,.88)',
+    '--step-shadow':'rgba(37,99,235,.35)',
+    '--feat-hover-border':'rgba(37,99,235,.45)',
+    '--feat-hover-shadow':'rgba(37,99,235,.13)',
+    '--feat-icon-bg':'rgba(37,99,235,.12)',
+    '--feat-icon-border':'rgba(37,99,235,.2)',
+    '--modal-icon-bg':'rgba(37,99,235,.14)',
+    '--modal-icon-border':'rgba(37,99,235,.22)',
+    '--hl-bg1':'rgba(37,99,235,.1)','--hl-bg2':'rgba(245,158,11,.07)',
+    '--hl-border':'rgba(37,99,235,.2)','--pop-shadow':'rgba(37,99,235,.2)',
+    '--wpp-out':'#2563EB','--wpp-send':'#F59E0B',
+    '--pdf-bg':'rgba(37,99,235,.12)','--pdf-border':'rgba(37,99,235,.28)',
+    '--xmark':'rgba(255,255,255,.18)','--pill-bg':'rgba(255,255,255,.05)',
+    '--mob-hover':'rgba(255,255,255,.04)',
+    avatars:['linear-gradient(135deg,#2563EB,#1D4ED8)','linear-gradient(135deg,#F59E0B,#2563EB)','linear-gradient(135deg,#60A5FA,#2563EB)'],
+    body:''
+  },
+  verde: {
+    '--bg':'#F8FAFB','--bg2':'#EFF2F5','--card':'#FFFFFF',
+    '--v':'#10B981','--t':'#0F4C3A','--tx':'#0F172A','--mu':'#64748B',
+    '--bd':'rgba(16,185,129,0.2)',
+    '--grd':'linear-gradient(135deg,#10B981,#059669)',
+    '--nav-bg':'rgba(248,250,251,.94)',
+    '--glow1':'rgba(16,185,129,.15)','--glow2':'rgba(5,150,105,.1)',
+    '--faq-open':'rgba(16,185,129,.12)','--modal-bg':'rgba(15,23,42,.86)',
+    '--step-shadow':'rgba(16,185,129,.3)',
+    '--feat-hover-border':'rgba(16,185,129,.4)',
+    '--feat-hover-shadow':'rgba(16,185,129,.1)',
+    '--feat-icon-bg':'rgba(16,185,129,.1)',
+    '--feat-icon-border':'rgba(16,185,129,.2)',
+    '--modal-icon-bg':'rgba(16,185,129,.12)',
+    '--modal-icon-border':'rgba(16,185,129,.22)',
+    '--hl-bg1':'rgba(16,185,129,.08)','--hl-bg2':'rgba(5,150,105,.05)',
+    '--hl-border':'rgba(16,185,129,.22)','--pop-shadow':'rgba(16,185,129,.15)',
+    '--wpp-out':'#10B981','--wpp-send':'#059669',
+    '--pdf-bg':'rgba(16,185,129,.12)','--pdf-border':'rgba(16,185,129,.3)',
+    '--xmark':'rgba(0,0,0,.18)','--pill-bg':'rgba(16,185,129,.06)',
+    '--mob-hover':'rgba(0,0,0,.03)',
+    avatars:['linear-gradient(135deg,#10B981,#059669)','linear-gradient(135deg,#059669,#0F4C3A)','linear-gradient(135deg,#34D399,#10B981)'],
+    body:'verde'
+  }
+};
+
+let current = 'laranja';
+function setTheme(name) {
+  const t = themes[name];
+  const root = document.documentElement;
+  Object.entries(t).forEach(([k,v]) => { if(k.startsWith('--')) root.style.setProperty(k,v); });
+  document.body.className = t.body || '';
+  // avatars
+  document.getElementById('av1').style.background = t.avatars[0];
+  document.getElementById('av2').style.background = t.avatars[1];
+  document.getElementById('av3').style.background = t.avatars[2];
+  // active button
+  document.querySelectorAll('.tb').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tb-'+name).classList.add('active');
+  current = name;
+  // restart wpp anim color
+  document.querySelector('.wav').style.background = t['--grd'];
+  document.querySelector('.wis').style.background = t['--wpp-send'];
+}
+
+// ── SCROLL ───────────────────────────────────────────────────────────────
+function s(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+const feats=[
+  {id:'ia',icon:'🤖',title:'Assistente IA no WhatsApp',short:'Controle tudo por mensagem de texto',sub:'IA que entende linguagem natural em português',secs:[{t:'O que é',p:'A Lara integra diretamente ao seu WhatsApp. Basta mandar uma mensagem e ela executa, registra ou responde instantaneamente.'},{t:'Na prática',items:['"Lara, registra R$350 de combustível hoje"','"Quais reuniões tenho amanhã?"','"Resumo das minhas finanças dessa semana"','"Qual a senha do Wi-Fi do escritório?"']},{t:'Tecnologia',p:'Planos pagos usam Claude (Anthropic) — um dos modelos mais avançados. Usuários Free usam modelo local sem custo.'},{hl:'💡 Única plataforma brasileira com assistente empresarial real dentro do WhatsApp.'}]},
+  {id:'fin',icon:'💰',title:'Gestão Financeira',short:'Despesas e relatórios via conversa',sub:'Controle financeiro sem planilhas',secs:[{t:'Para que serve',p:'Registre despesas enviando uma mensagem. Lara categoriza automaticamente, gera relatórios e avisa quando gastos ultrapassam limites.'},{t:'Funcionalidades',items:['Registro por texto ou foto de nota fiscal','Categorização automática com IA','Relatórios diários, semanais e mensais','DRE simplificado automático','Exportação em PDF e Excel']},{hl:'📊 Média de 2h40min economizadas por semana em tarefas financeiras manuais.'}]},
+  {id:'ag',icon:'📅',title:'Agenda Inteligente',short:'Reuniões e lembretes pelo WhatsApp',sub:'Nunca mais esqueça um compromisso',secs:[{t:'O que você faz',p:'Crie eventos digitando no WhatsApp. Lara interpreta "amanhã às 15h" e agenda com confirmação automática.'},{t:'Recursos',items:['Criação por mensagem de texto','Lembretes automáticos (15min, 1h, 1 dia antes)','Sync Google Calendar e Outlook','Convites automáticos para participantes','Recorrências (semanal, mensal, anual)']},{hl:'🗓️ "Lara, reunião com João quinta 14h e manda confirmação." — pronto.'}]},
+  {id:'ct',icon:'✍️',title:'Contratos e Assinatura Digital',short:'Crie e assine contratos sem papel',sub:'Validade jurídica completa, sem cartório',secs:[{t:'Para que serve',p:'Crie contratos com templates, envie por WhatsApp ou email, acompanhe assinaturas em tempo real.'},{t:'Funcionalidades',items:['Templates prontos (prestação, locação, parceria)','Assinatura digital com validade (ICP-Brasil)','Envio por WhatsApp ou link','Rastreamento de abertura e assinatura','Alertas de vencimento']},{hl:'⚖️ Contrato que levava 3 dias agora fecha em 5 minutos.'}]},
+  {id:'pw',icon:'🔐',title:'Cofre de Senhas',short:'Senhas seguras consultadas via IA',sub:'Nunca mais esqueça um acesso importante',secs:[{t:'Por que usar',p:'Guarda senhas com criptografia AES-256. Consulta via WhatsApp com autenticação por PIN.'},{t:'Como funciona',items:['Criptografia AES-256 em repouso e trânsito','Consulta via WhatsApp com PIN','Compartilhamento por permissão de equipe','Gerador de senhas fortes','Log de quem acessou e quando']},{hl:'🛡️ "Lara, login do banco Inter?" — Ela pede o PIN e entrega só para você.'}]},
+  {id:'em',icon:'📧',title:'Email Marketing',short:'Campanhas profissionais no painel Lara',sub:'Comunicação em escala com sua base',secs:[{t:'Para que serve',p:'Envie newsletters e campanhas com templates profissionais, automações e relatórios de abertura e cliques.'},{t:'Recursos',items:['Editor drag-and-drop','Templates responsivos mobile','Segmentação de listas','Automações (boas-vindas, aniversário, follow-up)','Teste A/B de assunto','Até 50k disparos/mês no Business']},{hl:'📈 Contatos da agenda viram lista de email com um clique.'}]},
+  {id:'px',icon:'📞',title:'PABX na Nuvem',short:'Telefonia profissional sem hardware',sub:'Sua central telefônica completa no celular',secs:[{t:'O que é',p:'Central telefônica virtual completa, sem equipamentos físicos. Número profissional, URA, ramais, gravação e relatórios — tudo integrado.'},{t:'Incluído',items:['Número dedicado (DDD local ou 0800)','URA personalizável','Ramais para cada colaborador','Gravação automática de chamadas','Se não atender → WhatsApp automático ao cliente']},{hl:'📞 Disponível como add-on por R$149/mês. Cancele quando quiser.'}]},
+  {id:'rl',icon:'📊',title:'Relatórios e IA Analítica',short:'Insights automáticos sobre seu negócio',sub:'A IA que transforma dados em decisões',secs:[{t:'O que analisa',p:'Cruza dados de finanças, agenda e contratos para gerar insights: tendências de gastos, previsão de faturamento e oportunidades.'},{t:'Tipos de relatórios',items:['Fluxo de caixa diário/semanal/mensal','DRE simplificado automático','Análise de contratos próximos a vencer','Ranking de fornecedores por gasto','Projeção de faturamento']},{hl:'🧠 Todo segunda às 8h a Lara manda o resumo da semana, sem você pedir.'}]},
+  {id:'mu',icon:'👥',title:'Multi-usuário e Times',short:'Colaboração com permissões para a equipe',sub:'Controle quem vê e faz o quê',secs:[{t:'Para times que crescem',p:'Adicione colaboradores, defina permissões por módulo e acompanhe a atividade da equipe.'},{t:'Recursos',items:['Perfis de acesso (admin, gerente, colaborador)','Log de atividades por usuário','Tarefas delegadas com acompanhamento','Multi-tenant para múltiplas empresas/filiais']},{hl:'🏢 No Business: usuários ilimitados. Escale sem custo por pessoa.'}]},
+  {id:'mb',icon:'📱',title:'App Mobile iOS & Android',short:'A Lara no seu bolso em qualquer lugar',sub:'Aplicativo nativo de alta performance',secs:[{t:'Por que ter o app',p:'Além do WhatsApp, painel completo com dashboards, relatórios visuais, agenda e gestão de documentos.'},{t:'No app',items:['Dashboard com KPIs do negócio','Agenda visual (dia, semana, mês)','Cofre de senhas com biometria','Relatórios em gráficos interativos','Notificações push inteligentes','Modo offline para consulta']},{hl:'📲 Disponível gratuitamente na App Store e Google Play para todos os planos.'}]}
+];
+
+const fqs=[
+  {q:'Preciso de algum app extra para usar a Lara?',a:'Não. A Lara funciona diretamente no WhatsApp que você já tem. O app mobile é opcional.'},
+  {q:'Meus dados ficam seguros?',a:'Sim. AES-256 em repouso e TLS 1.3 em trânsito. Seguimos a LGPD na íntegra e nunca compartilhamos seus dados.'},
+  {q:'Posso cancelar quando quiser?',a:'Sim, sem fidelidade e sem multa. Você tem acesso até o fim do período pago. Dados exportáveis por 30 dias.'},
+  {q:'A IA fala só português?',a:'Sim, otimizada para o português brasileiro — entende gírias, abreviações e contexto regional.'},
+  {q:'Funciona para qualquer tipo de empresa?',a:'Especialmente útil para profissionais liberais, prestadores de serviço, PMEs e empreendedores individuais.'},
+  {q:'O que acontece quando o trial de 14 dias acaba?',a:'Você é avisado 3 dias antes. Se não assinar, a conta migra para o Free sem perda de dados.'},
+  {q:'A assinatura digital tem validade jurídica?',a:'Sim. Segue a Lei 14.063/2020 com trilha de auditoria, carimbo de tempo e geolocalização do signatário.'}
+];
+
+// ── RENDER ───────────────────────────────────────────────────────────────
+document.getElementById('fg').innerHTML = feats.map(f =>
+  `<div class="fc" onclick="oM('${f.id}')"><div class="fi">${f.icon}</div><div class="fn">${f.title}</div><div class="fd">${f.short}</div><div class="fa">Saiba mais →</div></div>`
+).join('');
+
+document.getElementById('fl').innerHTML = fqs.map((f,i) =>
+  `<div class="fitem" id="fq${i}"><button class="fq" onclick="tF(${i})">${f.q}<span class="ar">+</span></button><div class="fans">${f.a}</div></div>`
+).join('');
+
+function tF(i){
+  const el = document.getElementById('fq'+i);
+  const o = el.classList.contains('open');
+  document.querySelectorAll('.fitem.open').forEach(e => e.classList.remove('open'));
+  if(!o) el.classList.add('open');
+}
+
+function oM(id){
+  const f = feats.find(x => x.id === id); if(!f) return;
+  document.getElementById('mI').textContent = f.icon;
+  document.getElementById('mT').textContent = f.title;
+  document.getElementById('mS').textContent = f.sub;
+  document.getElementById('mB').innerHTML = f.secs.map(s => {
+    if(s.hl) return `<div class="mhl"><p>${s.hl}</p></div>`;
+    let h = `<div class="ms"><h4>${s.t}</h4>`;
+    if(s.p) h += `<p>${s.p}</p>`;
+    if(s.items) h += `<ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    return h + '</div>';
+  }).join('') + `<button class="mcta" onclick="s('plans');cM()">Quero usar esse recurso →</button>`;
+  document.getElementById('mo').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function cM(){ document.getElementById('mo').classList.remove('active'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if(e.key==='Escape') cM(); });
+
+// ── WPP ANIMATION ────────────────────────────────────────────────────────
+const cv = [
+  {o:'Quais despesas tive essa semana?', r:'📊 Semana 16–22/Jun\n💸 Total: R$ 1.847,50\n🍽️ Alimentação: R$ 340\n⛽ Combustível: R$ 480\n🏢 Fornecedores: R$ 1.027,50'},
+  {o:'Quais reuniões tenho amanhã?', r:'📅 Terça 24/Jun\n\n09:00 — Call com João\n14:00 — Reunião fornecedor\n16:30 — 1:1 com equipe'},
+  {o:'Qual a senha do Wi-Fi do escritório?', r:'🔐 PIN confirmado ✅\n\nWiFi-Escritorio\nSenha: LaraOfc@2025'},
+  {o:'Cria contrato de prestação para Ana Silva', r:'✍️ Contrato gerado!\nLink de assinatura enviado\npara o WhatsApp da Ana. ✅'},
+  {o:'Faz um orçamento para a Maria, 3 itens', r:null, pdf:true}
+];
+let ci = 0;
+function anim(){
+  const b = document.getElementById('wb');
+  const c = cv[ci % cv.length]; ci++;
+  b.innerHTML = `<div class="wm out">${c.o}</div><div class="wm typ" id="tm"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  if(c.pdf){
+    const ls = ['Gerando orçamento... ✍️','','📋 Orçamento #2024-089','Cliente: Maria Fernanda','─────────────────','• Consultoria  R$ 2.500','• Análise      R$ 1.800','• Relatório    R$ 700','─────────────────','💰 Total: R$ 5.000,00'];
+    setTimeout(() => {
+      const t = document.getElementById('tm'); if(t) t.remove();
+      const m = document.createElement('div'); m.className='wm in'; m.style.whiteSpace='pre-line'; m.style.fontFamily='monospace'; m.style.fontSize='.7rem'; m.textContent=''; b.appendChild(m);
+      let l = 0;
+      function tl(){ if(l<ls.length){ m.textContent+=(l>0?'\n':'')+ls[l]; l++; setTimeout(tl, l<3?200:140); } else { setTimeout(()=>{ const p=document.createElement('div'); p.className='wpdf'; p.innerHTML='<div class="wpi">📄</div><div class="wpdf-info"><div class="wpn">Orçamento_Maria_089.pdf</div><div class="wpm">PDF · 142 KB · Assinatura digital</div></div>'; b.appendChild(p); const te=document.createElement('div'); te.className='wt'; te.textContent='agora'; b.appendChild(te); }, 350); } }
+      tl();
+    }, 1600);
+  } else {
+    setTimeout(() => { const t=document.getElementById('tm'); if(t)t.remove(); const m=document.createElement('div'); m.className='wm in'; m.style.whiteSpace='pre-line'; m.textContent=c.r; b.appendChild(m); const te=document.createElement('div'); te.className='wt'; te.textContent='agora'; b.appendChild(te); }, 1600);
+  }
+  setTimeout(anim, 6400);
+}
+anim();
+</script>
+</body>
+</html>
