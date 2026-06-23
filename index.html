@@ -58,8 +58,8 @@ a{color:inherit;text-decoration:none;}
 
 /* ── NAV ── */
 nav{position:fixed;top:3px;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:12px 4%;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);}
-.nav-logo{display:flex;flex-direction:column;line-height:1;gap:1px;}
-.logo-lara{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}.nav-logo-text{display:flex;flex-direction:column;gap:1px;}
+.logo-lara{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:800;color:#2563EB;-webkit-text-fill-color:#2563EB;letter-spacing:-.5px;line-height:1;}
 .logo-app{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:300;color:var(--mu);letter-spacing:-.5px;-webkit-text-fill-color:var(--mu);}
 .logo-tag{font-size:.5rem;font-weight:500;color:var(--mu);letter-spacing:1.2px;text-transform:uppercase;opacity:.7;}
 .nav-cta{background:var(--grd);border:none;border-radius:50px;padding:8px 18px;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;color:#fff;cursor:pointer;}
@@ -264,8 +264,19 @@ body.verde .wpp{box-shadow:0 20px 60px rgba(0,0,0,.15);}
 
 <nav>
   <div class="nav-logo">
-    <div><span class="logo-lara">Lara</span><span class="logo-app">App</span></div>
-    <div class="logo-tag">Gestão sem segredos</div>
+    <svg width="34" height="34" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+    <defs>
+      <linearGradient id="lsym1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#1D4ED8"/></linearGradient>
+      <linearGradient id="lsym2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F97316"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient>
+    </defs>
+    <rect x="10" y="10" width="16" height="46" rx="8" fill="url(#lsym1)"/>
+    <rect x="10" y="40" width="46" height="16" rx="8" fill="url(#lsym1)"/>
+    <circle cx="58" cy="18" r="12" fill="url(#lsym2)"/>
+  </svg>
+    <div class="nav-logo-text">
+      <div><span class="logo-lara">Lara</span><span class="logo-app">App</span></div>
+      <div class="logo-tag">Gestão sem segredos</div>
+    </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <div style="display:flex;gap:20px;" id="nl">
@@ -616,3 +627,4 @@ anim();
 </script>
 </body>
 </html>
+
