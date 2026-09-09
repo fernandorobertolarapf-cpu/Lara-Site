@@ -54,7 +54,7 @@ a{color:inherit;text-decoration:none;}
 
 /* ── PULSE ── */
 .pulse-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;background:var(--grd);transform-origin:left;animation:pb 3s ease-in-out infinite;}
-@keyframes pb{0%,100%{opacity:.5;transform:scaleX(.3);}50%{opacity:1;transform:scaleX(1);}}
+@keyframes pb{0%{opacity:.5;transform:scaleX(.3);}50%{opacity:1;transform:scaleX(1);}100%{opacity:.5;transform:scaleX(.3);}}
 
 /* ── NAV ── */
 nav{position:fixed;top:3px;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:12px 4%;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);}
@@ -627,3 +627,5 @@ anim();
 </script>
 </body>
 </html>
+
+"
