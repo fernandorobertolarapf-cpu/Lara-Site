@@ -7,6 +7,8 @@ const requireMatch = (pattern, message) => {
   if (!pattern.test(html)) findings.push(message);
 };
 
+const lineOf = (offset) => html.slice(0, offset ?? 0).split('\n').length;
+
 requireMatch(/<!doctype\s+html>/i, 'index.html: DOCTYPE HTML ausente');
 requireMatch(/<html\b[^>]*\blang=["']pt-BR["']/i, 'index.html: lang="pt-BR" ausente');
 requireMatch(/<meta\b[^>]*\bcharset=["']?utf-8["']?/i, 'index.html: meta charset UTF-8 ausente');
@@ -28,9 +30,12 @@ for (const match of html.matchAll(/\bhref=["']#([^"']*)["']/gi)) {
 
 for (const match of html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)) {
   const value = match[1];
-  if (/^http:\/\//i.test(value)) findings.push(`index.html: recurso/link HTTP inseguro: ${value}`);
+  const line = lineOf(match.index);
+  if (/^http:\/\//i.test(value)) {
+    findings.push(`index.html:${line}: recurso/link HTTP inseguro`);
+  }
   if (/(?:localhost|127\.0\.0\.1|0\.0\.0\.0|example\.com|trycloudflare\.com)/i.test(value)) {
-    findings.push(`index.html: URL de desenvolvimento/placeholder publicada: ${value}`);
+    findings.push(`index.html:${line}: URL de desenvolvimento/placeholder publicada`);
   }
 }
 
