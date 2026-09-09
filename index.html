@@ -54,7 +54,7 @@ a{color:inherit;text-decoration:none;}
 
 /* ── PULSE ── */
 .pulse-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;background:var(--grd);transform-origin:left;animation:pb 3s ease-in-out infinite;}
-@keyframes pb{0%{opacity:.5;transform:scaleX(.3);}50%{opacity:1;transform:scaleX(1);}100%{opacity:.5;transform:scaleX(.3);}}
+@keyframes pb{0%,100%{opacity:.5;transform:scaleX(.3);}50%{opacity:1;transform:scaleX(1);}}
 
 /* ── NAV ── */
 nav{position:fixed;top:3px;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:12px 4%;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);}
@@ -600,7 +600,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') cM(); });
 const cv = [
   {o:'Quais despesas tive essa semana?', r:'📊 Semana 16–22/Jun\n💸 Total: R$ 1.847,50\n🍽️ Alimentação: R$ 340\n⛽ Combustível: R$ 480\n🏢 Fornecedores: R$ 1.027,50'},
   {o:'Quais reuniões tenho amanhã?', r:'📅 Terça 24/Jun\n\n09:00 — Call com João\n14:00 — Reunião fornecedor\n16:30 — 1:1 com equipe'},
-  {o:'Qual a senha do Wi-Fi do escritório?', r:'🔐 PIN confirmado ✅\n\nWiFi-Escritorio\nSenha: LaraOfc@2025'},
+  {o:'Qual a senha do Wi-Fi do escritório?', r:'🔐 PIN confirmado ✅\n\nWiFi-Escritorio\nSenha: [protegida]'},
   {o:'Cria contrato de prestação para Ana Silva', r:'✍️ Contrato gerado!\nLink de assinatura enviado\npara o WhatsApp da Ana. ✅'},
   {o:'Faz um orçamento para a Maria, 3 itens', r:null, pdf:true}
 ];
@@ -627,4 +627,3 @@ anim();
 </script>
 </body>
 </html>
-
