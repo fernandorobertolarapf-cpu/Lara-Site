@@ -360,7 +360,7 @@ body.verde .wpp{box-shadow:0 20px 60px rgba(0,0,0,.15);}
     <div class="pc"><div class="pn">Free</div><div class="pp"><sup>R$</sup>0<span class="per">/mês</span></div><p class="pd">Para conhecer a Lara e começar a organizar seu negócio.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>IA modelo local</li><li class="on"><span class="ck">✓</span>Até 50 despesas/mês</li><li class="on"><span class="ck">✓</span>Agenda básica · 1 usuário</li><li><span class="xk">✗</span>Contratos e assinatura</li><li><span class="xk">✗</span>Email marketing · PABX</li></ul><button class="pbtn gh">Começar grátis</button></div>
     <div class="pc pop"><div class="pb">⚡ Mais popular</div><div class="pn">Pro</div><div class="pp"><sup>R$</sup>97<span class="per">/mês</span></div><p class="pd">Para profissionais e pequenas empresas que querem crescer.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>IA Claude (mais avançada)</li><li class="on"><span class="ck">✓</span>Despesas e receitas ilimitadas</li><li class="on"><span class="ck">✓</span>Agenda + lembretes automáticos</li><li class="on"><span class="ck">✓</span>Contratos com assinatura digital</li><li class="on"><span class="ck">✓</span>Cofre de senhas · Até 3 usuários</li><li><span class="xk">✗</span>Email marketing · PABX</li></ul><button class="pbtn">Assinar Pro →</button></div>
     <div class="pc"><div class="pn">Business</div><div class="pp"><sup>R$</sup>297<span class="per">/mês</span></div><p class="pd">Para empresas que querem automação completa e escala.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>Tudo do Pro</li><li class="on"><span class="ck">✓</span>Email marketing (50k disparos)</li><li class="on"><span class="ck">✓</span>PABX na nuvem</li><li class="on"><span class="ck">✓</span>Relatórios IA avançados</li><li class="on"><span class="ck">✓</span>Multi-tenant · Usuários ilimitados</li><li class="on"><span class="ck">✓</span>Suporte prioritário</li></ul><button class="pbtn">Assinar Business →</button></div>
-    <div class="pc"><div class="pn">PABX Add-on</div><div class="pp"><sup>R$</sup>149<span class="per">/mês</span></div><p class="pd">Telefonia profissional para qualquer plano Lara.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>Número dedicado (DDD local ou 0800)</li><li class="on"><span class="ck">✓</span>URA personalizável</li><li class="on"><span class="ck">✓</span>Ramais + Gravação de chamadas</li><li class="on"><span class="ck">✓</span>Relatórios de ligações</li><li class="on"><span class="ck">✓</span>Integra com WhatsApp IA</li></ul><button class="pbtn gh">Adicionar ao plano</button></div>
+    <div class="pc"><div class="pn">PABX Add-on</div><div class="pp"><sup>R$</sup>149<span class="per">/mês</span></div><p class="pd">Telefonia profissional para qualquer plano Lara.</p><div class="pdiv"></div><ul class="pf"><li class="on"><span class="ck">✓</span>Número dedicado</li><li class="on"><span class="ck">✓</span>URA / IVR personalizável</li><li class="on"><span class="ck">✓</span>Ramais + Gravação de chamadas</li><li class="on"><span class="ck">✓</span>Relatórios de ligações</li><li class="on"><span class="ck">✓</span>Integra com WhatsApp IA</li></ul><button class="pbtn gh">Adicionar ao plano</button></div>
   </div>
   <p style="text-align:center;margin-top:22px;font-size:.78rem;color:var(--mu);">💳 Pix, boleto ou cartão &nbsp;·&nbsp; 🔒 SSL certificado &nbsp;·&nbsp; ✅ Cancele quando quiser</p>
 </div></section>
@@ -598,23 +598,10 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') cM(); });
 
 // ── WPP ANIMATION ────────────────────────────────────────────────────────
 const cv = [
-  {o:'Quais despesas tive essa semana?', r:'📊 Semana 16–22/Jun\
-💸 Total: R$ 1.847,50\
-🍽️ Alimentação: R$ 340\
-⛽ Combustível: R$ 480\
-🏢 Fornecedores: R$ 1.027,50'},
-  {o:'Quais reuniões tenho amanhã?', r:'📅 Terça 24/Jun\
-\
-09:00 — Call com João\
-14:00 — Reunião fornecedor\
-16:30 — 1:1 com equipe'},
-  {o:'Qual a senha do Wi-Fi do escritório?', r:'🔐 PIN confirmado ✅\
-\
-WiFi-Escritorio\
-Senha: [protegida]'},
-  {o:'Cria contrato de prestação para Ana Silva', r:'✍️ Contrato gerado!\
-Link de assinatura enviado\
-para o WhatsApp da Ana. ✅'},
+  {o:'Quais despesas tive essa semana?', r:'📊 Semana 16–22/Jun\n💸 Total: R$ 1.847,50\n🍽️ Alimentação: R$ 340\n⛽ Combustível: R$ 480\n🏢 Fornecedores: R$ 1.027,50'},
+  {o:'Quais reuniões tenho amanhã?', r:'📅 Terça 24/Jun\n\n09:00 — Call com João\n14:00 — Reunião fornecedor\n16:30 — 1:1 com equipe'},
+  {o:'Qual a senha do Wi-Fi do escritório?', r:'🔐 PIN confirmado ✅\n\nWiFi-Escritorio\nSenha: LaraOfc@2025'},
+  {o:'Cria contrato de prestação para Ana Silva', r:'✍️ Contrato gerado!\nLink de assinatura enviado\npara o WhatsApp da Ana. ✅'},
   {o:'Faz um orçamento para a Maria, 3 itens', r:null, pdf:true}
 ];
 let ci = 0;
@@ -628,8 +615,7 @@ function anim(){
       const t = document.getElementById('tm'); if(t) t.remove();
       const m = document.createElement('div'); m.className='wm in'; m.style.whiteSpace='pre-line'; m.style.fontFamily='monospace'; m.style.fontSize='.7rem'; m.textContent=''; b.appendChild(m);
       let l = 0;
-      function tl(){ if(l<ls.length){ m.textContent+=(l>0?'\
-':'')+ls[l]; l++; setTimeout(tl, l<3?200:140); } else { setTimeout(()=>{ const p=document.createElement('div'); p.className='wpdf'; p.innerHTML='<div class="wpi">📄</div><div class="wpdf-info"><div class="wpn">Orçamento_Maria_089.pdf</div><div class="wpm">PDF · 142 KB · Assinatura digital</div></div>'; b.appendChild(p); const te=document.createElement('div'); te.className='wt'; te.textContent='agora'; b.appendChild(te); }, 350); } }
+      function tl(){ if(l<ls.length){ m.textContent+=(l>0?'\n':'')+ls[l]; l++; setTimeout(tl, l<3?200:140); } else { setTimeout(()=>{ const p=document.createElement('div'); p.className='wpdf'; p.innerHTML='<div class="wpi">📄</div><div class="wpdf-info"><div class="wpn">Orçamento_Maria_089.pdf</div><div class="wpm">PDF · 142 KB · Assinatura digital</div></div>'; b.appendChild(p); const te=document.createElement('div'); te.className='wt'; te.textContent='agora'; b.appendChild(te); }, 350); } }
       tl();
     }, 1600);
   } else {
@@ -641,3 +627,4 @@ anim();
 </script>
 </body>
 </html>
+
