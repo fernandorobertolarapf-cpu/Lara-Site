@@ -1,4 +1,4 @@
 {
-  "maxUnmaskedPasswordExamples": 1,
-  "note": "Baseline temporário da issue #2. Reduzir para 0 na mesma PR que mascarar o exemplo legado restante."
+  "maxUnmaskedPasswordExamples": 0,
+  "note": "Baseline fechado da issue #2: exemplos públicos de senha devem permanecer mascarados."
 }
