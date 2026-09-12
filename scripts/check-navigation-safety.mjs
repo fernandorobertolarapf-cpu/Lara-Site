@@ -46,6 +46,46 @@ function attributesOf(tag) {
   return attributes;
 }
 
+/**
+ * Extrai tags sem confundir `>` dentro de atributo entre aspas com o fim da tag.
+ * Regex como `<...[^>]*>` encerra cedo em HTML perfeitamente valido, por exemplo
+ * `<a data-note="x>y" href="javascript:...">`, e deixaria os atributos seguintes
+ * fora da analise. O scanner abaixo so fecha a tag quando `>` esta fora de aspas.
+ */
+function* tagsOf(html) {
+  let start = -1;
+  let quote = null;
+
+  for (let i = 0; i < html.length; i += 1) {
+    const ch = html[i];
+
+    if (start < 0) {
+      if (ch === '<' && /[a-z]/i.test(html[i + 1] || '')) {
+        start = i;
+        quote = null;
+      }
+      continue;
+    }
+
+    if (quote) {
+      if (ch === quote) quote = null;
+      continue;
+    }
+
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      continue;
+    }
+
+    if (ch === '>') {
+      const tag = html.slice(start, i + 1);
+      const name = /^<([a-z][\w:-]*)\b/i.exec(tag)?.[1];
+      if (name) yield { tag, tagName: name.toLowerCase(), index: start };
+      start = -1;
+    }
+  }
+}
+
 function stripOuterQuotes(value) {
   const trimmed = String(value || '').trim();
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
@@ -61,11 +101,9 @@ export function scanNavigationSafety(html) {
   const lineOf = (offset) => html.slice(0, offset ?? 0).split('\n').length;
   const navigationAttributes = ['href', 'src', 'action', 'formaction'];
 
-  for (const match of html.matchAll(/<([a-z][\w:-]*)\b[^>]*>/gi)) {
-    const tagName = match[1].toLowerCase();
-    const tag = match[0];
+  for (const { tagName, tag, index } of tagsOf(html)) {
     const attributes = attributesOf(tag);
-    const line = lineOf(match.index);
+    const line = lineOf(index);
 
     for (const attribute of navigationAttributes) {
       if (!attributes.has(attribute)) continue;
