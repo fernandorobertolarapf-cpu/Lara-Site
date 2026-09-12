@@ -53,3 +53,21 @@ test('detecta meta refresh HTTP sem aspas', () => {
   assert.equal(findings.length, 1);
   assert.match(findings[0], /meta refresh inseguro/);
 });
+
+test('nao encerra a tag em > dentro de atributo entre aspas', () => {
+  const findings = scanNavigationSafety('<a data-note="x>y" href="javascript:alert(1)>window.x">x</a>');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0], /href usa esquema/);
+});
+
+test('continua validando atributos depois de > entre aspas', () => {
+  const findings = scanNavigationSafety('<a data-note="x>y" href=https://example.com target=_blank rel=noreferrer>x</a>');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0], /noopener/);
+});
+
+test('detecta meta refresh perigoso quando content contem > entre aspas', () => {
+  const findings = scanNavigationSafety('<meta http-equiv="refresh" content="0;url=javascript:alert(1)>window.x">');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0], /meta refresh inseguro/);
+});
