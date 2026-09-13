@@ -103,7 +103,9 @@ function stripOuterQuotes(value) {
 export function scanNavigationSafety(html) {
   const findings = [];
   const lineOf = (offset) => html.slice(0, offset ?? 0).split('\n').length;
-  const navigationAttributes = ['href', 'src', 'action', 'formaction'];
+  // SVG legado ainda aceita xlink:href em elementos de navegacao. Tratar o
+  // atributo como href impede que um esquema executavel escape do guardrail.
+  const navigationAttributes = ['href', 'xlink:href', 'src', 'action', 'formaction'];
 
   for (const { tagName, tag, index } of tagsOf(html)) {
     const attributes = attributesOf(tag);
