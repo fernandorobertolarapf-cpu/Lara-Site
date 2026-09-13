@@ -71,3 +71,14 @@ test('detecta meta refresh perigoso quando content contem > entre aspas', () => 
   assert.equal(findings.length, 1);
   assert.match(findings[0], /meta refresh inseguro/);
 });
+
+test('atributo duplicado respeita o primeiro valor interpretado pelo HTML', () => {
+  const findings = scanNavigationSafety('<a href="javascript:alert(1)" href="https://example.com">x</a>');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0], /href usa esquema/);
+});
+
+test('atributo duplicado posterior perigoso nao cria falso positivo quando o primeiro e seguro', () => {
+  const findings = scanNavigationSafety('<a href="https://example.com" href="javascript:alert(1)">x</a>');
+  assert.deepEqual(findings, []);
+});
