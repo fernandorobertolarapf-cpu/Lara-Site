@@ -25,6 +25,12 @@ test('detecta href executavel sem aspas', () => {
   assert.match(findings[0], /href usa esquema/);
 });
 
+test('detecta xlink:href executavel em SVG legado', () => {
+  const findings = scanNavigationSafety('<svg><a xlink:href="java&#x73;cript:alert(1)">x</a></svg>');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0], /xlink:href usa esquema/);
+});
+
 test('detecta action HTTP sem aspas e com controles/entidades', () => {
   const findings = scanNavigationSafety('<form action=http&#58;//example.com/login></form>');
   assert.equal(findings.length, 1);
