@@ -40,8 +40,12 @@ function attributesOf(tag) {
   const attributes = new Map();
   const attrRe = /\b([^\s"'<>\/=]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g;
   for (const match of tag.matchAll(attrRe)) {
+    const name = match[1].toLowerCase();
     const value = match[2] ?? match[3] ?? match[4] ?? '';
-    attributes.set(match[1].toLowerCase(), decodeHtmlEntities(value));
+    // O parser HTML conserva a primeira ocorrencia de um atributo duplicado e
+    // ignora as seguintes. Sobrescrever no Map faria o scanner enxergar a ultima
+    // e permitiria esconder um href perigoso antes de um href aparentemente seguro.
+    if (!attributes.has(name)) attributes.set(name, decodeHtmlEntities(value));
   }
   return attributes;
 }
